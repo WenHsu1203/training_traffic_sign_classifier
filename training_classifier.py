@@ -1,9 +1,9 @@
 # Load pickled data
 import pickle
 
-training_file = 'traffic-signs-data/train.p'
-validation_file= 'traffic-signs-data/valid.p'
-testing_file = 'traffic-signs-data/test.p'
+training_file = 'train.p'
+validation_file= 'valid.p'
+testing_file = 'test.p'
 
 with open(training_file, mode='rb') as f:
     train = pickle.load(f)
@@ -40,9 +40,10 @@ y_test = to_categorical(y_test, num_classes= 43)
 
 import cv2
 def img_to_tensor(img):
-	# resize the image to (32, 32, 3)
+    # img = cv2.cvtColor(img,cv2.COLOR_RGB2GRAY)
+	# resize the image to (32, 32, 1)
     img = cv2.resize(img,(32,32))
-    # convert 3D tensor to 4D tensor with shape (1, 32, 32, 3) and return 4D tensor
+    # convert 3D tensor to 4D tensor with shape (1, 32, 32, 1) and return 4D tensor
     return np.expand_dims(img, axis=0)
 
 def imgs_to_tensor(imgs):
@@ -65,43 +66,46 @@ from keras.models import load_model
 
 model = Sequential()
 # 32,32,16
-model.add(Conv2D(filters = 16, kernel_size = 2, padding = 'same', activation = 'relu', input_shape = (32, 32, 3)))
+model.add(Conv2D(filters = 16, kernel_size = 5, padding = 'same', activation = 'relu', input_shape = (32, 32, 3)))
 # 16,16,16
 model.add(MaxPooling2D(pool_size = 2))
 # Dropout
 model.add(Dropout(0.5))
 # 16,16,32
-model.add(Conv2D(filters = 32, kernel_size = 2, padding = 'same', activation = 'relu'))
+model.add(Conv2D(filters = 32, kernel_size = 5, padding = 'same', activation = 'relu'))
 # 8,8,32
 model.add(MaxPooling2D(pool_size = 2))
 # Dropout
 model.add(Dropout(0.5))
 # 8,8,64
-model.add(Conv2D(filters = 64, kernel_size = 2, padding = 'same', activation = 'relu'))
+# model.add(Conv2D(filters = 64, kernel_size = 5, padding = 'same', activation = 'relu'))
 # 4,4,64
-model.add(MaxPooling2D(pool_size = 2))
+# model.add(MaxPooling2D(pool_size = 2))
 # Dropout
-model.add(Dropout(0.5))
+# model.add(Dropout(0.5))
 # 4,4,128
-model.add(Conv2D(filters = 128, kernel_size = 2, padding = 'same', activation = 'relu'))
+# model.add(Conv2D(filters = 128, kernel_size = 2, padding = 'same', activation = 'relu'))
 # 2,2,128
-model.add(MaxPooling2D(pool_size = 2))
+# model.add(MaxPooling2D(pool_size = 2))
 # Dropout
-model.add(Dropout(0.5))
+# model.add(Dropout(0.5))
 # 2,2,256
-model.add(Conv2D(filters = 256, kernel_size = 2, padding = 'same', activation = 'relu'))
+# model.add(Conv2D(filters = 256, kernel_size = 2, padding = 'same', activation = 'relu'))
 # 1,1,256
-model.add(MaxPooling2D(pool_size = 2))
+# model.add(MaxPooling2D(pool_size = 2))
 # Dropout
-model.add(Dropout(0.5))
+# model.add(Dropout(0.5))
 # flatten
 model.add(Flatten())
-model.add(Dense(128, activation = 'relu'))
+# model.add(Dense(512,activation = 'relu'))
 # Dropout
-model.add(Dropout(0.5))
-model.add(Dense(64, activation = 'relu'))
+# model.add(Dropout(0.5))
+# model.add(Dense(128, activation = 'relu'))
 # Dropout
-model.add(Dropout(0.5))
+# model.add(Dropout(0.5))
+# model.add(Dense(64, activation = 'relu'))
+# Dropout
+# model.add(Dropout(0.5))
 # Fully connected Layer to the number of signal categories
 model.add(Dense(43, activation = 'softmax'))
 
@@ -111,10 +115,10 @@ model.summary()
 model.compile(loss = "categorical_crossentropy", optimizer = 'rmsprop', metrics=["accuracy"])
 
 # train the model.
-epochs = 20
+epochs = 10
 batch_size = 32
 
-checkpointer = ModelCheckpoint(filepath='../saved_models/weights.h5', 
+checkpointer = ModelCheckpoint(filepath='weights.h5', 
                                verbose=1, save_best_only=True)
 
 model.fit(train_tensors, y_train, 
@@ -122,7 +126,7 @@ model.fit(train_tensors, y_train,
           epochs=epochs, batch_size=batch_size, callbacks=[checkpointer], verbose=1)
 
 del model
-model = load_model('../saved_models/weights.h5')
+model = load_model('weights.h5')
 signal_predictions = [np.argmax(model.predict(np.expand_dims(tensor, axis=0))) for tensor in test_tensors]
 # print out test accuracy
 test_accuracy = 100*np.sum(np.array(signal_predictions)==np.argmax(y_test, axis=1))/len(signal_predictions)
