@@ -77,35 +77,16 @@ model.add(Conv2D(filters = 32, kernel_size = 5, padding = 'same', activation = '
 model.add(MaxPooling2D(pool_size = 2))
 # Dropout
 model.add(Dropout(0.5))
-# 8,8,64
-# model.add(Conv2D(filters = 64, kernel_size = 5, padding = 'same', activation = 'relu'))
-# 4,4,64
-# model.add(MaxPooling2D(pool_size = 2))
-# Dropout
-# model.add(Dropout(0.5))
-# 4,4,128
-# model.add(Conv2D(filters = 128, kernel_size = 2, padding = 'same', activation = 'relu'))
-# 2,2,128
-# model.add(MaxPooling2D(pool_size = 2))
-# Dropout
-# model.add(Dropout(0.5))
-# 2,2,256
-# model.add(Conv2D(filters = 256, kernel_size = 2, padding = 'same', activation = 'relu'))
-# 1,1,256
-# model.add(MaxPooling2D(pool_size = 2))
-# Dropout
-# model.add(Dropout(0.5))
 # flatten
 model.add(Flatten())
-# model.add(Dense(512,activation = 'relu'))
+# 512
+model.add(Dense(512,activation = 'relu'))
 # Dropout
-# model.add(Dropout(0.5))
-# model.add(Dense(128, activation = 'relu'))
+model.add(Dropout(0.5))
+# 128
+model.add(Dense(128, activation = 'relu'))
 # Dropout
-# model.add(Dropout(0.5))
-# model.add(Dense(64, activation = 'relu'))
-# Dropout
-# model.add(Dropout(0.5))
+model.add(Dropout(0.5))
 # Fully connected Layer to the number of signal categories
 model.add(Dense(43, activation = 'softmax'))
 
