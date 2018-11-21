@@ -99,7 +99,7 @@ model.compile(loss = "categorical_crossentropy", optimizer = 'rmsprop', metrics=
 epochs = 10
 batch_size = 32
 
-checkpointer = ModelCheckpoint(filepath='weights.h5', 
+checkpointer = ModelCheckpoint(filepath='weights_2.h5', 
                                verbose=1, save_best_only=True)
 
 model.fit(train_tensors, y_train, 
@@ -107,7 +107,7 @@ model.fit(train_tensors, y_train,
           epochs=epochs, batch_size=batch_size, callbacks=[checkpointer], verbose=1)
 
 del model
-model = load_model('weights.h5')
+model = load_model('weights_2.h5')
 signal_predictions = [np.argmax(model.predict(np.expand_dims(tensor, axis=0))) for tensor in test_tensors]
 # print out test accuracy
 test_accuracy = 100*np.sum(np.array(signal_predictions)==np.argmax(y_test, axis=1))/len(signal_predictions)
