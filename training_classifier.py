@@ -1,6 +1,6 @@
 # Load pickled data
 import pickle
-
+import numpy as np
 training_file = 'train.p'
 validation_file= 'valid.p'
 testing_file = 'test.p'
@@ -16,10 +16,9 @@ X_train, y_train = train['features'], train['labels']
 X_valid, y_valid = valid['features'], valid['labels']
 X_test, y_test = test['features'], test['labels']
 # Combine training and validation data
-X_train = X_train+X_valid
-y_train = y_train+y_valid
+# X_train = np.concatenate((X_train, X_valid))
+# y_train = np.concatenate((y_train, y_valid))
 
-import numpy as np
 # Number of training examples
 n_train = len(X_train)
 # Number of validation examples
@@ -99,14 +98,17 @@ model.summary()
 model.compile(loss = "categorical_crossentropy", optimizer = 'rmsprop', metrics=["accuracy"])
 
 # train the model.
-epochs = 20
-batch_size = 16
+epochs = 50
+batch_size = 32
 
 checkpointer = ModelCheckpoint(filepath='weights_2.h5', 
                                verbose=1, save_best_only=True)
 
-model.fit(train_tensors, y_train, validation_split=0.33, 
-          epochs=epochs, batch_size=batch_size, callbacks=[checkpointer], verbose=1)
+with open('model_architecture.json', 'w') as f:
+    f.write(model.to_json())
+
+# model.fit(train_tensors, y_train, validation_data=(valid_tensors, y_valid), 
+#          epochs=epochs, batch_size=batch_size, callbacks=[checkpointer], verbose=1)
 
 del model
 model = load_model('weights_2.h5')
