@@ -15,6 +15,9 @@ with open(testing_file, mode='rb') as f:
 X_train, y_train = train['features'], train['labels']
 X_valid, y_valid = valid['features'], valid['labels']
 X_test, y_test = test['features'], test['labels']
+# Combine training and validation data
+X_train = X_train+X_valid
+y_train = y_train+y_valid
 
 import numpy as np
 # Number of training examples
@@ -80,13 +83,13 @@ model.add(Dropout(0.5))
 # flatten
 model.add(Flatten())
 # 512
-model.add(Dense(512,activation = 'relu'))
-# Dropout
-model.add(Dropout(0.5))
-# 128
-model.add(Dense(128, activation = 'relu'))
-# Dropout
-model.add(Dropout(0.5))
+# model.add(Dense(512,activation = 'relu'))
+# # Dropout
+# model.add(Dropout(0.5))
+# # 128
+# model.add(Dense(128, activation = 'relu'))
+# # Dropout
+# model.add(Dropout(0.5))
 # Fully connected Layer to the number of signal categories
 model.add(Dense(43, activation = 'softmax'))
 
@@ -96,14 +99,13 @@ model.summary()
 model.compile(loss = "categorical_crossentropy", optimizer = 'rmsprop', metrics=["accuracy"])
 
 # train the model.
-epochs = 10
-batch_size = 32
+epochs = 20
+batch_size = 16
 
 checkpointer = ModelCheckpoint(filepath='weights_2.h5', 
                                verbose=1, save_best_only=True)
 
-model.fit(train_tensors, y_train, 
-          validation_data=(valid_tensors, y_valid),
+model.fit(train_tensors, y_train, validation_split=0.33, 
           epochs=epochs, batch_size=batch_size, callbacks=[checkpointer], verbose=1)
 
 del model
